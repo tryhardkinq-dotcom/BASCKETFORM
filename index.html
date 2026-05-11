@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HOOPFORM — Pose Analyzer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #030712; color: white; font-family: 'DM Sans', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+  header { width: 100%; max-width: 480px; padding: 20px 20px 0; display: flex; align-items: center; gap: 10px; }
+  h1 { font-family: 'Bebas Neue', cursive; font-size: 32px; letter-spacing: 2px; background: linear-gradient(90deg, #f97316, #fb923c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  #main { width: 100%; max-width: 480px; padding: 16px 20px 40px; display: flex; flex-direction: column; gap: 14px; }
+  #canvas-wrap { position: relative; border-radius: 20px; overflow: hidden; background: #000; aspect-ratio: 9/16; max-height: 65vh; display: none; }
+  #video { position: absolute; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+  #overlay { position: absolute; width: 100%; height: 100%; transform: scaleX(-1); }
+  #status-bar { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, #000000cc, transparent); padding: 20px 16px 14px; display: flex; flex-direction: column; gap: 6px; }
+  #status-text { font-size: 13px; color: #f97316; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  #score-badge { position: absolute; top: 12px; right: 12px; background: #000000aa; border-radius: 12px; padding: 8px 14px; text-align: center; }
+  #score-num { font-family: 'Bebas Neue', cursive; font-size: 36px; line-height: 1; }
+  #score-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+  .feedback-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag { font-size: 11px; padding: 3px 10px; border-radius: 99px; font-weight: 700; }
+  .tag.ok { background: #16a34a33; color: #4ade80; border: 1px solid #4ade8066; }
+  .tag.err { background: #dc262633; color: #f87171; border: 1px solid #f8717166; }
+  .tag.warn { background: #d9770633; color: #fb923c; border: 1px solid #fb923c66; }
+  #idle-screen { text-align: center; padding: 40px 0; }
+  .ball-icon { width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, #f9731620, #f9731605); border: 2px dashed #f97316aa; display: flex; align-items: center; justify-content: center; margin: 0 auto 28px; font-size: 50px; }
+  p.sub { color: #64748b; font-size: 14px; line-height: 1.6; margin-bottom: 28px; }
+  .btn-primary { background: linear-gradient(135deg, #f97316, #ea580c); border: none; border-radius: 16px; padding: 16px 40px; font-size: 16px; font-weight: 700; color: white; cursor: pointer; box-shadow: 0 8px 32px #f9731640; font-family: 'DM Sans', sans-serif; width: 100%; }
+  .btn-secondary { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 14px; font-size: 15px; color: #94a3b8; cursor: pointer; font-family: 'DM Sans', sans-serif; width: 100%; }
+  #legend { background: #0f172a; border: 1px solid #1e293b; border-radius: 16px; padding: 14px 16px; display: none; }
+  #legend h3 { font-family: 'Bebas Neue', cursive; color: #f97316; font-size: 16px; letter-spacing: 1px; margin-bottom: 10px; }
+  .legend-row { display: flex; gap: 14px; font-size: 12px; color: #94a3b8; margin-bottom: 6px; align-items: center; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  #loading-overlay { position: absolute; inset: 0; background: #000000cc; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; z-index: 10; }
+  .spinner { width: 48px; height: 48px; border: 3px solid #f97316; border-top-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #loading-text { color: #94a3b8; font-size: 14px; }
+  #error-box { background: #450a0a; border: 1px solid #ef4444; border-radius: 12px; padding: 12px 16px; font-size: 14px; color: #fca5a5; display: none; }
+</style>
+</head>
+<body>
+<header>
+  <span style="font-size:26px">🏀</span>
+  <h1>HOOPFORM</h1>
+  <span style="color:#475569;font-size:13px;margin-left:4px">Pose Analyzer</span>
+</header>
+<div id="main">
+  <div id="error-box"></div>
+  <div id="idle-screen">
+    <div class="ball-icon">🏀</div>
+    <p class="sub">Detección de postura en tiempo real.<br>La cámara dibuja líneas sobre tu cuerpo<br>y te dice qué corregir.</p>
+    <button class="btn-primary" onclick="startCamera()">📷 Iniciar Análisis</button>
+  </div>
+  <div id="canvas-wrap">
+    <video id="video" playsinline muted></video>
+    <canvas id="overlay"></canvas>
+    <div id="loading-overlay">
+      <div class="spinner"></div>
+      <div id="loading-text">Cargando modelo de IA...</div>
+    </div>
+    <div id="score-badge">
+      <div id="score-num" style="color:#f97316">--</div>
+      <div id="score-label">forma</div>
+    </div>
+    <div id="status-bar">
+      <div id="status-text">Detectando postura...</div>
+      <div class="feedback-row" id="tags-row"></div>
+    </div>
+  </div>
+  <button class="btn-secondary" id="stop-btn" style="display:none" onclick="stopCamera()">✕ Detener</button>
+  <div id="legend">
+    <h3>GUÍA DE COLORES</h3>
+    <div class="legend-row"><div class="dot" style="background:#4ade80"></div> Verde — posición correcta</div>
+    <div class="legend-row"><div class="dot" style="background:#f97316"></div> Naranja — ajuste menor necesario</div>
+    <div class="legend-row"><div class="dot" style="background:#f87171"></div> Rojo — error a corregir</div>
+    <div class="legend-row"><div class="dot" style="background:#60a5fa"></div> Azul — punto de referencia</div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+<script>
+const video = document.getElementById('video');
+const canvas = document.getElementById('overlay');
+const ctx = canvas.getContext('2d');
+const loadingOverlay = document.getElementById('loading-overlay');
+const loadingText = document.getElementById('loading-text');
+const statusText = document.getElementById('status-text');
+const tagsRow = document.getElementById('tags-row');
+const scoreNum = document.getElementById('score-num');
+const errorBox = document.getElementById('error-box');
+let cameraInstance = null;
+let poseInstance = null;
+
+function angle(a, b, c) {
+  const ab = { x: a.x - b.x, y: a.y - b.y };
+  const cb = { x: c.x - b.x, y: c.y - b.y };
+  const dot = ab.x * cb.x + ab.y * cb.y;
+  const magAB = Math.hypot(ab.x, ab.y);
+  const magCB = Math.hypot(cb.x, cb.y);
+  if (magAB === 0 || magCB === 0) return 0;
+  return Math.acos(Math.max(-1, Math.min(1, dot / (magAB * magCB)))) * (180 / Math.PI);
+}
+
+function analyzeForm(landmarks) {
+  const issues = [], goods = [], warns = [];
+  let score = 10;
+  const l = (i) => landmarks[i];
+  const lShoulder = l(11), rShoulder = l(12);
+  const lElbow = l(13),    rElbow = l(14);
+  const lWrist = l(15),    rWrist = l(16);
+  const lHip = l(23),      rHip = l(24);
+  const lKnee = l(25),     rKnee = l(26);
+  const lAnkle = l(27),    rAnkle = l(28);
+  const elbowAngle = angle(rShoulder, rElbow, rWrist);
+  if (elbowAngle < 70) { issues.push("Codo muy cerrado"); score -= 2; }
+  else if (elbowAngle > 130) { warns.push("Extiende más el codo"); score -= 1; }
+  else { goods.push("Codo ✓"); }
+  const elbowFlare = Math.abs(rElbow.x - rShoulder.x);
+  if (elbowFlare > 0.12) { issues.push("Codo hacia afuera"); score -= 2; }
+  const kneeAngleR = angle(rHip, rKnee, rAnkle);
+  const kneeAngleL = angle(lHip, lKnee, lAnkle);
+  const avgKnee = (kneeAngleR + kneeAngleL) / 2;
+  if (avgKnee > 170) { issues.push("Dobla las rodillas"); score -= 2; }
+  else if (avgKnee > 150) { warns.push("Más flexión en rodillas"); score -= 1; }
+  else { goods.push("Rodillas ✓"); }
+  const shoulderTilt = Math.abs(lShoulder.y - rShoulder.y);
+  if (shoulderTilt > 0.08) { warns.push("Nivela los hombros"); score -= 1; }
+  else { goods.push("Hombros ✓"); }
+  if (rWrist.y < rShoulder.y) { goods.push("Muñeca alta ✓"); }
+  if (Math.abs(lHip.y - rHip.y) < 0.05) { goods.push("Cadera ✓"); }
+  score = Math.max(0, Math.min(10, score));
+  return { issues, goods, warns, score, elbowAngle, avgKnee };
+}
+
+function connectionColor(score) {
+  if (score >= 8) return '#4ade80';
+  if (score >= 5) return '#f97316';
+  return '#f87171';
+}
+
+function drawSkeleton(landmarks, formResult) {
+  const color = connectionColor(formResult.score);
+  const w = canvas.width, h = canvas.height;
+  const connections = [[11,12],[11,13],[13,15],[12,14],[14,16],[11,23],[12,24],[23,24],[23,25],[25,27],[24,26],[26,28]];
+  connections.forEach(([a, b]) => {
+    const pa = landmarks[a], pb = landmarks[b];
+    if (!pa || !pb || pa.visibility < 0.4 || pb.visibility < 0.4) return;
+    let lineColor = color;
+    if ([12,14,16].includes(a) || [12,14,16].includes(b)) {
+      lineColor = (formResult.elbowAngle >= 70 && formResult.elbowAngle <= 130) ? '#4ade80' : '#f87171';
+    }
+    ctx.beginPath();
+    ctx.moveTo(pa.x * w, pa.y * h);
+    ctx.lineTo(pb.x * w, pb.y * h);
+    ctx.strokeStyle = lineColor;
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.shadowColor = lineColor;
+    ctx.shadowBlur = 12;
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  });
+  landmarks.forEach((lmk, i) => {
+    if (lmk.visibility < 0.4) return;
+    const x = lmk.x * w, y = lmk.y * h;
+    let dotColor = '#60a5fa';
+    if ([13,14,15,16].includes(i)) dotColor = color;
+    if ([25,26,27,28].includes(i)) dotColor = formResult.avgKnee < 160 ? '#4ade80' : '#f87171';
+    ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = dotColor; ctx.shadowColor = dotColor; ctx.shadowBlur = 16; ctx.fill(); ctx.shadowBlur = 0;
+    ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.strokeStyle = 'white'; ctx.lineWidth = 1.5; ctx.stroke();
+  });
+}
+
+function updateUI(formResult) {
+  const { issues, goods, warns, score } = formResult;
+  scoreNum.textContent = score.toFixed(0);
+  scoreNum.style.color = score >= 8 ? '#4ade80' : score >= 5 ? '#f97316' : '#f87171';
+  if (issues.length === 0 && warns.length === 0) { statusText.textContent = '🔥 ¡Forma perfecta!'; statusText.style.color = '#4ade80'; }
+  else if (issues.length > 0) { statusText.textContent = `⚠️ Corrige: ${issues[0]}`; statusText.style.color = '#f87171'; }
+  else { statusText.textContent = `💡 ${warns[0]}`; statusText.style.color = '#fb923c'; }
+  tagsRow.innerHTML = [...issues.map(t => `<span class="tag err">✗ ${t}</span>`), ...warns.map(t => `<span class="tag warn">△ ${t}</span>`), ...goods.map(t => `<span class="tag ok">✓ ${t}</span>`)].join('');
+}
+
+function onResults(results) {
+  if (loadingOverlay.style.display !== 'none') loadingOverlay.style.display = 'none';
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!results.poseLandmarks || results.poseLandmarks.length === 0) {
+    statusText.textContent = '👀 Muévete al centro de la cámara';
+    statusText.style.color = '#f97316';
+    tagsRow.innerHTML = ''; scoreNum.textContent = '--'; return;
+  }
+  const formResult = analyzeForm(results.poseLandmarks);
+  drawSkeleton(results.poseLandmarks, formResult);
+  updateUI(formResult);
+}
+
+async function startCamera() {
+  document.getElementById('idle-screen').style.display = 'none';
+  document.getElementById('canvas-wrap').style.display = 'block';
+  document.getElementById('stop-btn').style.display = 'block';
+  document.getElementById('legend').style.display = 'block';
+  loadingOverlay.style.display = 'flex';
+  errorBox.style.display = 'none';
+  try {
+    poseInstance = new Pose({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}` });
+    poseInstance.setOptions({ modelComplexity: 1, smoothLandmarks: true, enableSegmentation: false, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+    poseInstance.onResults(onResults);
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } });
+    video.srcObject = stream;
+    video.play();
+    cameraInstance = new Camera(video, { onFrame: async () => { await poseInstance.send({ image: video }); }, width: 640, height: 480 });
+    cameraInstance.start();
+  } catch (err) {
+    loadingOverlay.style.display = 'none';
+    errorBox.style.display = 'block';
+    errorBox.textContent = '⚠️ No se pudo acceder a la cámara. Abre esta página en Safari y permite el acceso.';
+  }
+}
+
+function stopCamera() {
+  if (cameraInstance) { cameraInstance.stop(); cameraInstance = null; }
+  if (poseInstance) { poseInstance.close(); poseInstance = null; }
+  if (video.srcObject) { video.srcObject.getTracks().forEach(t => t.stop()); video.srcObject = null; }
+  document.getElementById('idle-screen').style.display = 'block';
+  document.getElementById('canvas-wrap').style.display = 'none';
+  document.getElementById('stop-btn').style.display = 'none';
+  document.getElementById('legend').style.display = 'none';
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+</script>
+</body>
+</html>
