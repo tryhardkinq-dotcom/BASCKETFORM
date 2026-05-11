@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HOOPFORM PRO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0a;
+  --surface: #141414;
+  --surface2: #1c1c1c;
+  --border: #2a2a2a;
+  --orange: #FF5500;
+  --orange-glow: #FF550033;
+  --gold: #FFB800;
+  --green: #00E676;
+  --red: #FF1744;
+  --blue: #00B0FF;
+  --text: #FFFFFF;
+  --text2: #AAAAAA;
+  --text3: #555555;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;height:100%;overflow:hidden}
+/* ── SCREENS ── */
+.screen{display:none;height:100vh;overflow-y:auto;padding-bottom:68px}
+.screen.active{display:flex;flex-direction:column}
+/* ── NAV ── */
+#nav{position:fixed;bottom:0;left:0;right:0;height:60px;background:#111111;border-top:1px solid var(--border);display:flex;z-index:999;padding-bottom:env(safe-area-inset-bottom,0px)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--text3);cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:color .2s}
+.nb.active{color:var(--orange)}
+.nb svg{width:22px;height:22px}
+
+/* ══ HOME ══ */
+#home-screen{background:var(--bg)}
+.home-top{padding:36px 20px 20px;background:linear-gradient(180deg,#1a0a00 0%,var(--bg) 100%)}
+.brand-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.brand-ball{width:44px;height:44px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 24px var(--orange-glow)}
+.brand-name{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:3px;color:var(--text)}
+.brand-pro{font-size:11px;font-weight:700;color:var(--orange);letter-spacing:2px;background:var(--orange-glow);border:1px solid var(--orange);border-radius:4px;padding:2px 8px;margin-left:4px}
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:#FF000015;border:1px solid #FF000040;border-radius:4px;padding:4px 10px;font-size:11px;font-weight:700;color:#FF4444;letter-spacing:2px;margin-bottom:16px}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#FF4444;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.home-title{font-family:'Bebas Neue',cursive;font-size:42px;letter-spacing:2px;line-height:1;color:var(--text);margin-bottom:6px}
+.home-title span{color:var(--orange)}
+.home-sub{color:var(--text2);font-size:14px;font-weight:600;letter-spacing:.5px}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 20px 20px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--orange)}
+.sc-num{font-family:'Bebas Neue',cursive;font-size:34px;color:var(--orange);line-height:1}
+.sc-lbl{font-size:10px;color:var(--text3);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+
+/* Mode cards */
+.sec-title{padding:0 20px 10px;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--text2)}
+.sec-title span{color:var(--orange)}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 16px}
+.mc{background:var(--surface);border:2px solid var(--border);border-radius:16px;padding:16px 14px;cursor:pointer;position:relative;overflow:hidden;transition:border-color .15s,transform .1s;-webkit-tap-highlight-color:transparent}
+.mc:active{transform:scale(.97)}
+.mc.sel{border-color:var(--orange);background:linear-gradient(135deg,#FF550010,var(--surface))}
+.mc-badge{position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:1px;text-transform:uppercase}
+.mc-badge.pop{background:var(--orange);color:#fff}
+.mc-badge.new{background:var(--gold);color:#000}
+.mc-icon{font-size:26px;margin-bottom:8px}
+.mc-name{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;color:var(--text)}
+.mc-desc{font-size:11px;color:var(--text3);margin-top:3px;font-weight:600}
+
+/* CTA */
+.cta{margin:0 20px 24px;border:none;border-radius:14px;padding:16px;background:var(--orange);font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#fff;cursor:pointer;width:calc(100% - 40px);box-shadow:0 6px 30px var(--orange-glow);display:flex;align-items:center;justify-content:center;gap:8px;transition:transform .1s}
+.cta:active{transform:scale(.98)}
+
+/* ══ ANALYZE ══ */
+#analyze-screen{background:var(--bg)}
+.analyze-idle{padding:28px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;flex:1}
+.idle-ball{width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#FF550020,#FF550005);border:2px dashed #FF550050;display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 20px}
+.idle-title{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:2px;margin-bottom:6px}
+.idle-title span{color:var(--orange)}
+.idle-sub{color:var(--text2);font-size:14px;font-weight:600;margin-bottom:22px;line-height:1.5}
+.pills{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:22px}
+.pill{background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;letter-spacing:.5px;color:var(--text2)}
+.pill.active{background:var(--orange);border-color:var(--orange);color:#fff}
+.big-start{border:none;border-radius:14px;padding:16px;background:var(--orange);font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:3px;color:#fff;cursor:pointer;width:100%;box-shadow:0 6px 30px var(--orange-glow);transition:transform .1s}
+.big-start:active{transform:scale(.98)}
+
+/* Camera wrap */
+#cam-wrap{position:relative;width:100%;flex:1;background:#000;display:none;overflow:hidden;min-height:0}
+#vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+#cvs{position:absolute;inset:0;width:100%;height:100%;transform:scaleX(-1)}
+
+/* HUD */
+.hud-top{position:absolute;top:0;left:0;right:0;padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(to bottom,#000000cc,transparent);pointer-events:none}
+.hud-box{background:#000000bb;backdrop-filter:blur(8px);border:1px solid #ffffff15;border-radius:10px;padding:8px 12px;text-align:center}
+.hud-num{font-family:'Bebas Neue',cursive;font-size:38px;line-height:1;transition:color .3s}
+.hud-lbl{font-size:9px;color:#ffffff50;letter-spacing:2px;text-transform:uppercase}
+.hud-mode{background:#FF550022;border:1px solid #FF550044;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;color:var(--orange);letter-spacing:2px;text-transform:uppercase}
+
+.hud-bot{position:absolute;bottom:0;left:0;right:0;padding:20px 14px 12px;background:linear-gradient(to top,#000000ee,transparent);pointer-events:none}
+.hud-status{font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:1.5px;margin-bottom:7px;min-height:22px}
+.tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;letter-spacing:.5px}
+.ok{background:#00E67620;color:var(--green);border:1px solid #00E67640}
+.er{background:#FF174420;color:var(--red);border:1px solid #FF174440}
+.wn{background:#FF550020;color:#FF8800;border:1px solid #FF550040}
+.inf{background:#00B0FF20;color:var(--blue);border:1px solid #00B0FF40}
+
+/* Shot flash */
+#shot-flash{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .08s;border:3px solid var(--gold)}
+#shot-flash.show{opacity:1}
+.shot-txt{font-family:'Bebas Neue',cursive;font-size:52px;color:var(--gold);letter-spacing:4px;text-shadow:0 0 40px var(--gold);animation:pop .4s ease-out}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* Loading */
+#loading{position:absolute;inset:0;background:#000000dd;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:20}
+.ring{width:52px;height:52px;border:3px solid #FF550025;border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-txt{color:var(--text2);font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+
+/* BPM badge */
+.bpm-box{position:absolute;top:56px;left:12px;background:#000000bb;border:1px solid #00B0FF30;border-radius:10px;padding:8px 12px;display:none}
+.bpm-num{font-family:'Bebas Neue',cursive;font-size:30px;color:var(--blue)}
+.bpm-lbl{font-size:9px;color:#ffffff50;letter-spacing:1px}
+
+/* Controls */
+.cam-ctrls{display:flex;gap:10px;padding:10px 16px 0;background:var(--bg)}
+.ctrl{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text2);cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .15s}
+.ctrl.danger{color:var(--red);border-color:#FF174420}
+.ctrl.primary{background:var(--orange);border-color:var(--orange);color:#fff}
+
+/* Error */
+.err-box{background:#FF174415;border:1px solid #FF174440;border-radius:10px;padding:12px 16px;margin:16px 20px;font-size:13px;color:var(--red);font-weight:600;display:none}
+
+/* Voice */
+#voice-badge{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#00E67620;border:1px solid #00E67650;border-radius:99px;padding:6px 16px;font-size:11px;font-weight:700;color:var(--green);letter-spacing:1px;z-index:1000;display:none;align-items:center;gap:6px;white-space:nowrap}
+#voice-badge.show{display:flex}
+.vdot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink .7s infinite}
+
+/* ══ TRAIN ══ */
+#train-screen{background:var(--bg)}
+.train-head{padding:28px 20px 16px}
+.train-title{font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:2px;color:var(--text)}
+.train-title span{color:var(--orange)}
+.train-sub{color:var(--text2);font-size:13px;font-weight:600;letter-spacing:.5px;margin-top:2px}
+.train-body{padding:0 20px 24px;overflow-y:auto}
+
+/* Active drill */
+#active-drill{background:var(--surface);border:1px solid var(--orange);border-radius:16px;padding:16px;margin-bottom:16px;display:none}
+.drill-cam-wrap{position:relative;width:100%;aspect-ratio:4/3;background:#000;border-radius:12px;overflow:hidden;margin-bottom:12px;display:none}
+.drill-cam-wrap video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.drill-cam-wrap canvas{position:absolute;inset:0;width:100%;height:100%;transform:scaleX(-1)}
+.drill-cam-feedback{position:absolute;bottom:0;left:0;right:0;padding:10px 12px;background:linear-gradient(to top,#000000ee,transparent)}
+.drill-cam-status{font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;margin-bottom:5px}
+.drill-tags{display:flex;gap:5px;flex-wrap:wrap}
+
+.rep-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.rep-big{font-family:'Bebas Neue',cursive;font-size:60px;color:var(--orange);line-height:1}
+.rep-info{text-align:right}
+.rep-name{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:1px;color:var(--text)}
+.rep-total{font-size:12px;color:var(--text3);font-weight:700}
+.prog-bg{background:var(--border);border-radius:99px;height:5px;margin-bottom:12px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--gold));border-radius:99px;transition:width .3s}
+.drill-instr{background:#FF550010;border:1px solid #FF550025;border-radius:8px;padding:10px 12px;font-size:13px;font-weight:600;color:var(--text);line-height:1.5;margin-bottom:12px}
+.drill-btns{display:flex;gap:8px}
+.drill-done{flex:2;background:var(--orange);border:none;border-radius:10px;padding:13px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;color:#fff;cursor:pointer;text-transform:uppercase}
+.drill-stop{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:13px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--text3);cursor:pointer}
+
+.cat-label{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin:16px 0 8px;display:flex;align-items:center;gap:6px}
+.drill-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s,transform .1s;-webkit-tap-highlight-color:transparent}
+.drill-card:active{transform:scale(.98)}
+.drill-card:hover{border-color:var(--orange)}
+.di{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.di.s{background:#FF550018}
+.di.d{background:#00B0FF18}
+.di.df{background:#00E67618}
+.d-info{flex:1}
+.d-name{font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text)}
+.d-meta{font-size:11px;color:var(--text3);margin-top:2px;font-weight:600}
+.diff{font-size:9px;font-weight:700;padding:3px 8px;border-radius:3px;letter-spacing:1px;text-transform:uppercase;flex-shrink:0}
+.easy{background:#00E67618;color:var(--green)}
+.med{background:#FF880018;color:#FF8800}
+.hard{background:#FF174418;color:var(--red)}
+
+/* ══ STATS ══ */
+#stats-screen{background:var(--bg)}
+.stats-head{padding:28px 20px 16px}
+.stats-title{font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:2px;color:var(--text)}
+.stats-title span{color:var(--orange)}
+.stats-body{padding:0 20px 24px}
+.big-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.bs{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.bs::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.bs.a::before{background:linear-gradient(90deg,var(--orange),#FF8800)}
+.bs.b::before{background:linear-gradient(90deg,var(--green),var(--blue))}
+.bs.c::before{background:linear-gradient(90deg,var(--gold),var(--orange))}
+.bs.d::before{background:linear-gradient(90deg,var(--blue),#7C3AED)}
+.bs-num{font-family:'Bebas Neue',cursive;font-size:44px;line-height:1}
+.bs.a .bs-num{color:var(--orange)}
+.bs.b .bs-num{color:var(--green)}
+.bs.c .bs-num{color:var(--gold)}
+.bs.d .bs-num{color:var(--blue)}
+.bs-lbl{font-size:10px;color:var(--text3);font-weight:700;letter-spacing:1px;text-transform:uppercase}
+
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
+.chart-title{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:14px}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:80px}
+.bc{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;transition:height .5s cubic-bezier(.34,1.56,.64,1)}
+.blbl{font-size:9px;color:var(--text3);font-weight:700}
+
+.sess-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.si-icon{font-size:20px}
+.si-info{flex:1}
+.si-title{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text)}
+.si-meta{font-size:11px;color:var(--text3);margin-top:2px;font-weight:600}
+.si-score{font-family:'Bebas Neue',cursive;font-size:30px;color:var(--orange)}
+</style>
+</head>
+<body>
+
+<div id="voice-badge"><div class="vdot"></div><span id="voice-txt">...</span></div>
+
+<!-- ══ HOME ══ -->
+<div id="home-screen" class="screen active">
+  <div class="home-top">
+    <div class="brand-row">
+      <div class="brand-ball">🏀</div>
+      <div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="brand-name">HOOPFORM</span>
+          <span class="brand-pro">PRO</span>
+        </div>
+        <div style="font-size:11px;color:var(--text3);font-weight:600;letter-spacing:1px">ENTRENADOR NBA CON IA</div>
+      </div>
+    </div>
+    <div class="live-badge"><div class="live-dot"></div> ANÁLISIS EN VIVO</div>
+    <div class="home-title">LLEVA TU JUEGO<br>AL <span>SIGUIENTE NIVEL</span></div>
+    <div class="home-sub" style="margin-top:8px">Detección de postura · Voz en español · Análisis real</div>
+  </div>
+
+  <div class="stats-row" style="margin-top:16px">
+    <div class="sc"><div class="sc-num" id="h-sess">0</div><div class="sc-lbl">Sesiones</div></div>
+    <div class="sc"><div class="sc-num" id="h-shots">0</div><div class="sc-lbl">Tiros</div></div>
+    <div class="sc"><div class="sc-num" id="h-avg">—</div><div class="sc-lbl">Promedio</div></div>
+  </div>
+
+  <div class="sec-title">MODOS DE <span>ANÁLISIS</span></div>
+  <div class="mode-grid">
+    <div class="mc sel" id="mc-shoot" onclick="pickMode('shoot',this)">
+      <span class="mc-badge pop">POPULAR</span>
+      <div class="mc-icon">🎯</div>
+      <div class="mc-name">TIRO</div>
+      <div class="mc-desc">Mecánica completa de lanzamiento</div>
+    </div>
+    <div class="mc" id="mc-dribble" onclick="pickMode('dribble',this)">
+      <div class="mc-icon">⚡</div>
+      <div class="mc-name">DRIBBLE</div>
+      <div class="mc-desc">Ritmo, BPM y control del balón</div>
+    </div>
+    <div class="mc" id="mc-defense" onclick="pickMode('defense',this)">
+      <div class="mc-icon">🛡️</div>
+      <div class="mc-name">DEFENSA</div>
+      <div class="mc-desc">Posición y desplazamiento</div>
+    </div>
+    <div class="mc" id="mc-followthrough" onclick="pickMode('followthrough',this)">
+      <span class="mc-badge new">NUEVO</span>
+      <div class="mc-icon">🌊</div>
+      <div class="mc-name">FOLLOW-THROUGH</div>
+      <div class="mc-desc">Posición final del tiro</div>
+    </div>
+  </div>
+
+  <button class="cta" onclick="nav('analyze')">⚡ INICIAR SESIÓN</button>
+</div>
+
+<!-- ══ ANALYZE ══ -->
+<div id="analyze-screen" class="screen">
+  <div class="err-box" id="err"></div>
+
+  <div class="analyze-idle" id="a-idle">
+    <div class="idle-ball">🏀</div>
+    <div class="idle-title">MODO <span id="idle-mode">TIRO</span></div>
+    <p class="idle-sub">La IA detecta tu cuerpo en tiempo real<br>y te habla en español para corregirte</p>
+    <div class="pills">
+      <div class="pill active" onclick="pillMode(this,'shoot')">🎯 Tiro</div>
+      <div class="pill" onclick="pillMode(this,'dribble')">⚡ Dribble</div>
+      <div class="pill" onclick="pillMode(this,'defense')">🛡️ Defensa</div>
+      <div class="pill" onclick="pillMode(this,'followthrough')">🌊 Follow-through</div>
+    </div>
+    <button class="big-start" onclick="startCam()">📷 INICIAR ANÁLISIS</button>
+  </div>
+
+  <div id="cam-wrap">
+    <video id="vid" playsinline muted></video>
+    <canvas id="cvs"></canvas>
+
+    <div id="loading"><div class="ring"></div><div class="load-txt">CARGANDO IA...</div></div>
+
+    <div class="hud-top">
+      <div class="hud-box">
+        <div class="hud-num" id="score-num" style="color:var(--orange)">--</div>
+        <div class="hud-lbl">FORMA</div>
+      </div>
+      <div class="hud-mode" id="mode-badge">TIRO</div>
+      <div class="hud-box">
+        <div class="hud-num" id="shot-count" style="color:var(--gold)">0</div>
+        <div class="hud-lbl">TIROS</div>
+      </div>
+    </div>
+
+    <div class="bpm-box" id="bpm-box">
+      <div class="bpm-num" id="bpm-val">--</div>
+      <div class="bpm-lbl">BPM DRIBBLE</div>
+    </div>
+
+    <div id="shot-flash"><div class="shot-txt" id="shot-txt">¡TIRO!</div></div>
+
+    <div class="hud-bot">
+      <div class="hud-status" id="status-txt">DETECTANDO POSTURA...</div>
+      <div class="tags" id="tags"></div>
+    </div>
+  </div>
+
+  <div class="cam-ctrls" id="cam-ctrls" style="display:none">
+    <button class="ctrl danger" onclick="stopCam()">✕ DETENER</button>
+    <button class="ctrl primary" onclick="saveSession()">💾 GUARDAR</button>
+  </div>
+</div>
+
+<!-- ══ TRAIN ══ -->
+<div id="train-screen" class="screen">
+  <div class="train-head">
+    <div class="train-title">ENTRE<span>NAMIENTO</span></div>
+    <div class="train-sub">EJERCICIOS GUIADOS CON DETECCIÓN DE IA EN VIVO</div>
+  </div>
+  <div class="train-body">
+
+    <!-- Active drill panel -->
+    <div id="active-drill">
+      <!-- Live camera for drill -->
+      <div class="drill-cam-wrap" id="drill-cam-wrap">
+        <video id="drill-vid" playsinline muted></video>
+        <canvas id="drill-cvs"></canvas>
+        <div class="drill-cam-feedback">
+          <div class="drill-cam-status" id="drill-cam-status" style="color:var(--orange)">DETECTANDO...</div>
+          <div class="drill-tags" id="drill-tags"></div>
+        </div>
+      </div>
+      <div class="rep-row">
+        <div class="rep-big" id="rep-num">0</div>
+        <div class="rep-info">
+          <div class="rep-name" id="drill-name-txt">EJERCICIO</div>
+          <div class="rep-total" id="drill-prog">0 / 10</div>
+        </div>
+      </div>
+      <div class="prog-bg"><div class="prog-fill" id="drill-bar" style="width:0%"></div></div>
+      <div class="drill-instr" id="drill-instr">Instrucción del ejercicio</div>
+      <div class="drill-btns">
+        <button class="drill-done" id="drill-done-btn" onclick="repDone()">✓ REP COMPLETADA</button>
+        <button class="drill-stop" onclick="stopDrill()">✕ PARAR</button>
+      </div>
+    </div>
+
+    <div class="cat-label">🎯 TIRO</div>
+    <div class="drill-card" onclick="startDrill('catch_shoot')">
+      <div class="di s">🎯</div>
+      <div class="d-info"><div class="d-name">Catch & Shoot</div><div class="d-meta">10 tiros · recepción y lanzamiento</div></div>
+      <span class="diff easy">FÁCIL</span>
+    </div>
+    <div class="drill-card" onclick="startDrill('form_shooting')">
+      <div class="di s">🏀</div>
+      <div class="d-info"><div class="d-name">Form Shooting</div><div class="d-meta">15 tiros · solo mecánica del brazo</div></div>
+      <span class="diff easy">FÁCIL</span>
+    </div>
+    <div class="drill-card" onclick="startDrill('midrange')">
+      <div class="di s">📐</div>
+      <div class="d-info"><div class="d-name">Mid-Range Series</div><div class="d-meta">20 tiros · media distancia</div></div>
+      <span class="diff med">MEDIO</span>
+    </div>
+    <div class="drill-card" onclick="startDrill('stepback')">
+      <div class="di s">💫</div>
+      <div class="d-info"><div class="d-name">Step-Back Jumper</div><div class="d-meta">12 tiros · estilo Luka / Harden</div></div>
+      <span class="diff hard">DIFÍCIL</span>
+    </div>
+
+    <div class="cat-label">⚡ DRIBBLE</div>
+    <div class="drill-card" onclick="startDrill('basic_dribble')">
+      <div class="di d">⚡</div>
+      <div class="d-info"><div class="d-name">Dribble Básico</div><div class="d-meta">60 seg · control ambas manos</div></div>
+      <span class="diff easy">FÁCIL</span>
+    </div>
+    <div class="drill-card" onclick="startDrill('crossover')">
+      <div class="di d">🔀</div>
+      <div class="d-info"><div class="d-name">Crossover Series</div><div class="d-meta">20 cruces · velocidad y control</div></div>
+      <span class="diff med">MEDIO</span>
+    </div>
+    <div class="drill-card" onclick="startDrill('behind_back')">
+      <div class="di d">🌀</div>
+      <div class="d-info"><div class="d-name">Behind-the-Back</div><div class="d-meta">15 reps · dribble por la espalda</div></div>
+      <span class="diff hard">DIFÍCIL</span>
+    </div>
+
+    <div class="cat-label">🛡️ DEFENSA</div>
+    <div class="drill-card" onclick="startDrill('def_stance')">
+      <div class="di df">🛡️</div>
+      <div class="d-info"><div class="d-name">Posición Defensiva</div><div class="d-meta">45 seg · mantén la postura</div></div>
+      <span class="diff easy">FÁCIL</span>
+    </div>
+    <div class="drill-card" onclick="startDrill('lateral')">
+      <div class="di df">↔️</div>
+      <div class="d-info"><div class="d-name">Lateral Slides</div><div class="d-meta">3 series · desplazamiento lateral</div></div>
+      <span class="diff med">MEDIO</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ STATS ══ -->
+<div id="stats-screen" class="screen">
+  <div class="stats-head">
+    <div class="stats-title">ESTA<span>DÍSTICAS</span></div>
+  </div>
+  <div class="stats-body">
+    <div class="big-grid">
+      <div class="bs a"><div class="bs-num" id="st-sess">0</div><div class="bs-lbl">Sesiones</div></div>
+      <div class="bs b"><div class="bs-num" id="st-shots">0</div><div class="bs-lbl">Tiros</div></div>
+      <div class="bs c"><div class="bs-num" id="st-avg">—</div><div class="bs-lbl">Promedio</div></div>
+      <div class="bs d"><div class="bs-num" id="st-best">—</div><div class="bs-lbl">Mejor sesión</div></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">📈 PROGRESO DE FORMA</div>
+      <div class="bar-chart" id="bar-chart"><div style="color:var(--text3);font-size:13px;font-weight:700;padding:20px 0;width:100%;text-align:center">Sin sesiones aún</div></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">📋 HISTORIAL</div>
+      <div id="sess-list"><div style="color:var(--text3);font-size:13px;font-weight:700;padding:20px 0;text-align:center">No hay sesiones</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <button class="nb active" id="nb-home" onclick="nav('home')">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    INICIO
+  </button>
+  <button class="nb" id="nb-analyze" onclick="nav('analyze')">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.89L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+    ANALIZAR
+  </button>
+  <button class="nb" id="nb-train" onclick="nav('train')">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+    ENTRENAR
+  </button>
+  <button class="nb" id="nb-stats" onclick="nav('stats')">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+    STATS
+  </button>
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+<script>
+// ══════════ STATE ══════════
+let mode = 'shoot';
+let mainCam = null, mainPose = null;
+let drillCam = null, drillPose = null;
+let sessShots = 0, sessScores = [], sessActive = false;
+let wristHist = [], dribbleHist = [], lastDribbleT = 0, bpm = 0;
+let shotCooldown = false;
+let voiceQ = [], voiceBusy = false, lastVoice = 0;
+let sessions = [];
+try { sessions = JSON.parse(localStorage.getItem('hf_v2') || '[]'); } catch(e){}
+
+let activeDrill = null, drillReps = 0, drillTimer = null;
+
+const DRILLS = {
+  catch_shoot:  { name:'Catch & Shoot',      reps:10, mode:'shoot',   icon:'🎯', instr:'Simula recibir un pase. Planta los pies rápido y lanza con forma correcta. Rodillas dobladas, codo adentro, follow-through completo.' },
+  form_shooting:{ name:'Form Shooting',       reps:15, mode:'shoot',   icon:'🏀', instr:'Sin saltar. Solo trabaja la mecánica del brazo. Codo 90°, muñeca snap al final.' },
+  midrange:     { name:'Mid-Range Series',    reps:20, mode:'shoot',   icon:'📐', instr:'Usa las piernas para generar potencia. Sube el balón desde las caderas.' },
+  stepback:     { name:'Step-Back Jumper',    reps:12, mode:'shoot',   icon:'💫', instr:'Un paso atrás explosivo. Equilibrio clave: core firme al retroceder.' },
+  basic_dribble:{ name:'Dribble Básico',      reps:60, mode:'dribble', icon:'⚡', instr:'Alterna mano derecha e izquierda. Vista al frente, NO al balón. Posición baja.', timer:true },
+  crossover:    { name:'Crossover Series',    reps:20, mode:'dribble', icon:'🔀', instr:'Cruza el balón explosivo y bajo. No debe subir más de la cadera.' },
+  behind_back:  { name:'Behind-the-Back',     reps:15, mode:'dribble', icon:'🌀', instr:'Pasa el balón por la espalda. Empieza lento, aumenta velocidad gradualmente.' },
+  def_stance:   { name:'Posición Defensiva',  reps:45, mode:'defense', icon:'🛡️', instr:'Rodillas dobladas, espalda recta, manos activas. Pies más anchos que hombros.', timer:true },
+  lateral:      { name:'Lateral Slides',      reps:3,  mode:'defense', icon:'↔️', instr:'5 pasos rápidos a cada lado. No cruces los pies. Posición baja todo el tiempo.' },
+};
+
+// ══════════ MATH ══════════
+function ang(a,b,c) {
+  const ab={x:a.x-b.x,y:a.y-b.y},cb={x:c.x-b.x,y:c.y-b.y};
+  const d=ab.x*cb.x+ab.y*cb.y, m=Math.hypot(ab.x,ab.y)*Math.hypot(cb.x,cb.y);
+  return m===0?0:Math.acos(Math.max(-1,Math.min(1,d/m)))*180/Math.PI;
+}
+const L=(lm,i)=>lm[i];
+
+// ══════════ ANALYSIS ══════════
+function analyzeShoot(lm) {
+  const i=[],g=[],w=[]; let s=10;
+  const rS=L(lm,12),lS=L(lm,11),rE=L(lm,14),lE=L(lm,13);
+  const rW=L(lm,16),lW=L(lm,15);
+  const rH=L(lm,24),lH=L(lm,23),rK=L(lm,26),lK=L(lm,25),rA=L(lm,28),lA=L(lm,27);
+  const ea=ang(rS,rE,rW);
+  if(ea<65){i.push('Codo muy cerrado');s-=2.5}else if(ea>140){w.push('Extiende el codo');s-=1}else g.push('Codo ✓');
+  if(Math.abs(rE.x-rS.x)>0.11){i.push('Codo hacia afuera');s-=2}
+  const kk=(ang(rH,rK,rA)+ang(lH,lK,lA))/2;
+  if(kk>172){i.push('Dobla las rodillas');s-=2}else if(kk>155){w.push('Más flexión');s-=1}else g.push('Rodillas ✓');
+  if(Math.abs(lS.y-rS.y)>0.07){w.push('Nivela hombros');s-=1}else g.push('Hombros ✓');
+  if(rW.y<rS.y-0.05)g.push('Muñeca alta ✓');else{w.push('Sube la muñeca');s-=0.5}
+  if(Math.abs(lH.x-rH.x)>0.12)g.push('Base ✓');
+  return{i,g,w,s:Math.max(0,Math.min(10,s)),ea,kk,mode:'shoot'};
+}
+
+function analyzeDribble(lm) {
+  const i=[],g=[],w=[]; let s=10;
+  const rH=L(lm,24),lH=L(lm,23),rK=L(lm,26),lK=L(lm,25),rA=L(lm,28),lA=L(lm,27);
+  const rW=L(lm,16),lW=L(lm,15),rE=L(lm,14),lE=L(lm,13);
+  const nose=L(lm,0);
+  const kk=(ang(rH,rK,rA)+ang(lH,lK,lA))/2;
+  if(kk>168){i.push('Agáchate más');s-=3}else if(kk>152){w.push('Baja más');s-=1}else g.push('Posición baja ✓');
+  const hw=Math.abs(lH.x-rH.x);
+  if(hw<0.14){i.push('Base más ancha');s-=2}else g.push('Base ✓');
+  // Manos bajas = bien (dribble)
+  const handH=Math.min(rW.y,lW.y);
+  if(handH>0.5)g.push('Manos bajas ✓');else{w.push('Baja las manos');s-=1}
+  // Espalda
+  const ba=ang(L(lm,11),L(lm,23),L(lm,25));
+  if(ba<160){w.push('Espalda recta');s-=1}else g.push('Espalda ✓');
+  if(nose.visibility>0.5)g.push('Vista al frente ✓');
+  return{i,g,w,s:Math.max(0,Math.min(10,s)),kk,mode:'dribble'};
+}
+
+function analyzeDefense(lm) {
+  const i=[],g=[],w=[]; let s=10;
+  const rH=L(lm,24),lH=L(lm,23),rK=L(lm,26),lK=L(lm,25),rA=L(lm,28),lA=L(lm,27);
+  const rW=L(lm,16),lW=L(lm,15);
+  const kk=(ang(rH,rK,rA)+ang(lH,lK,lA))/2;
+  if(kk>165){i.push('Baja la posición');s-=3}else if(kk>148){w.push('Más bajo');s-=1}else g.push('Posición ✓');
+  const aw=Math.abs(lA.x-rA.x);
+  if(aw<0.18){i.push('Pies más separados');s-=2}else g.push('Base ✓');
+  const as=Math.abs(lW.x-rW.x);
+  if(as>0.28)g.push('Brazos activos ✓');else{w.push('Extiende brazos');s-=1}
+  if(Math.abs(lH.y-rH.y)<0.06)g.push('Caderas ✓');
+  return{i,g,w,s:Math.max(0,Math.min(10,s)),kk,mode:'defense'};
+}
+
+function analyzeFollowThrough(lm) {
+  const i=[],g=[],w=[]; let s=10;
+  const rS=L(lm,12),rE=L(lm,14),rW=L(lm,16);
+  const rH=L(lm,24),lH=L(lm,23),rK=L(lm,26),lK=L(lm,25),rA=L(lm,28),lA=L(lm,27);
+  if(rW.y>rE.y)g.push('Follow-through ✓');else{i.push('Termina el tiro');s-=3}
+  const ae=ang(rS,rE,rW);
+  if(ae>150)g.push('Brazo extendido ✓');else{w.push('Extiende el brazo');s-=1.5}
+  if(rW.y<rS.y)g.push('Mano arriba ✓');else{i.push('Mano arriba tras el tiro');s-=2}
+  const kk=(ang(rH,rK,rA)+ang(lH,lK,lA))/2;
+  if(kk<172)g.push('Balance ✓');else{w.push('Mantén balance');s-=1}
+  return{i,g,w,s:Math.max(0,Math.min(10,s)),kk,ae,mode:'followthrough'};
+}
+
+function runAnalysis(lm,m){
+  switch(m){
+    case'shoot':return analyzeShoot(lm);
+    case'dribble':return analyzeDribble(lm);
+    case'defense':return analyzeDefense(lm);
+    case'followthrough':return analyzeFollowThrough(lm);
+    default:return analyzeShoot(lm);
+  }
+}
+
+// ══════════ SHOT DETECT ══════════
+function detectShot(lm){
+  if(mode!=='shoot'&&mode!=='followthrough')return false;
+  wristHist.push(L(lm,16).y);
+  if(wristHist.length>10)wristHist.shift();
+  if(wristHist.length<10)return false;
+  const mn=Math.min(...wristHist),mx=Math.max(...wristHist),range=mx-mn;
+  const pi=wristHist.indexOf(mn);
+  if(range>0.13&&pi>=2&&pi<=6&&!shotCooldown){
+    shotCooldown=true;
+    setTimeout(()=>shotCooldown=false,2200);
+    return true;
+  }
+  return false;
+}
+
+// ══════════ DRIBBLE BPM ══════════
+function trackDribble(lm){
+  if(mode!=='dribble')return;
+  const h=Math.min(L(lm,16).y,L(lm,15).y);
+  dribbleHist.push(h);
+  if(dribbleHist.length>24)dribbleHist.shift();
+  if(dribbleHist.length<10)return;
+  const avg=dribbleHist.reduce((a,b)=>a+b)/dribbleHist.length;
+  const l3=dribbleHist.slice(-3).reduce((a,b)=>a+b)/3;
+  const p3=dribbleHist.slice(-6,-3).reduce((a,b)=>a+b)/3;
+  if(p3<avg-0.03&&l3>avg-0.01){
+    const now=Date.now();
+    if(lastDribbleT>0){const iv=now-lastDribbleT;if(iv>180&&iv<2000){bpm=Math.round(60000/iv);document.getElementById('bpm-val').textContent=bpm;}}
+    lastDribbleT=now;
+  }
+}
+
+// ══════════ VOICE ══════════
+function speak(txt){
+  if(!window.speechSynthesis)return;
+  voiceQ.push(txt);
+  if(!voiceBusy)flushVoice();
+}
+function flushVoice(){
+  if(!voiceQ.length){voiceBusy=false;return;}
+  voiceBusy=true;
+  const txt=voiceQ.shift();
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang='es-ES';u.rate=1.1;u.pitch=1;u.volume=1;
+  const vb=document.getElementById('voice-badge'),vt=document.getElementById('voice-txt');
+  vb.classList.add('show');vt.textContent=txt;
+  u.onend=()=>{vb.classList.remove('show');voiceBusy=false;setTimeout(flushVoice,250);};
+  window.speechSynthesis.speak(u);
+}
+function voiceFB(r){
+  const now=Date.now();
+  if(now-lastVoice<4500)return;
+  lastVoice=now;
+  const ERR_MSGS={
+    'Codo muy cerrado':'Abre el codo, ponlo debajo del balón',
+    'Codo hacia afuera':'Codo adentro, apunta al aro',
+    'Dobla las rodillas':'Dobla las rodillas, usa las piernas',
+    'Agáchate más':'Bájate más para el dribble',
+    'Baja la posición':'Baja la posición defensiva',
+    'Pies más separados':'Separa más los pies',
+    'Termina el tiro':'Termina el follow-through, muñeca abajo',
+    'Mano arriba tras el tiro':'Mantén la mano arriba después del tiro',
+    'Base más ancha':'Abre más la base para el dribble',
+  };
+  if(r.i.length>0){speak(ERR_MSGS[r.i[0]]||r.i[0]);}
+  else if(r.s>=9){const p=['¡Perfecta mecánica!','¡Forma NBA!','¡Así se tira!','¡Excelente!'];speak(p[Math.floor(Math.random()*p.length)]);}
+  else if(r.w.length>0&&r.s>=7){speak(r.w[0]);}
+}
+
+// ══════════ SKELETON ══════════
+function drawSkel(lm,r,canvas){
+  const ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height;
+  const sc=r.s>=8?'#00E676':r.s>=5?'#FF8800':'#FF1744';
+  const bok=r.ea?(r.ea>=65&&r.ea<=135):true;
+  const kok=r.kk?(r.kk<158):true;
+
+  const CONN=[
+    {p:[11,12],c:'torso'},{p:[11,23],c:'torso'},{p:[12,24],c:'torso'},{p:[23,24],c:'torso'},
+    {p:[11,13],c:'larm'},{p:[13,15],c:'larm'},
+    {p:[12,14],c:'rarm'},{p:[14,16],c:'rarm'},
+    {p:[23,25],c:'lleg'},{p:[25,27],c:'lleg'},
+    {p:[24,26],c:'rleg'},{p:[26,28],c:'rleg'},
+  ];
+
+  CONN.forEach(({p:[a,b],c})=>{
+    const pa=lm[a],pb=lm[b];
+    if(!pa||!pb||pa.visibility<0.35||pb.visibility<0.35)return;
+    let col=sc;
+    if(c==='rarm')col=bok?'#00E676':'#FF1744';
+    if(c==='lleg'||c==='rleg')col=kok?'#00E676':'#FF1744';
+    ctx.beginPath();ctx.moveTo(pa.x*w,pa.y*h);ctx.lineTo(pb.x*w,pb.y*h);
+    ctx.strokeStyle=col;ctx.lineWidth=5;ctx.lineCap='round';
+    ctx.shadowColor=col;ctx.shadowBlur=14;ctx.stroke();ctx.shadowBlur=0;
+  });
+
+  lm.forEach((p,i)=>{
+    if(p.visibility<0.35)return;
+    let dc='#60a5fa';
+    if([12,14,16].includes(i))dc=bok?'#00E676':'#FF1744';
+    if([11,13,15].includes(i))dc=sc;
+    if([25,26,27,28].includes(i))dc=kok?'#00E676':'#FF1744';
+    ctx.beginPath();ctx.arc(p.x*w,p.y*h,7,0,Math.PI*2);
+    ctx.fillStyle=dc;ctx.shadowColor=dc;ctx.shadowBlur=18;ctx.fill();ctx.shadowBlur=0;
+    ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=2;ctx.stroke();
+  });
+
+  // Angle labels
+  const drawLbl=(txt,lmk,col)=>{
+    if(lmk.visibility<0.4)return;
+    const x=lmk.x*w,y=lmk.y*h;
+    ctx.save();ctx.font='bold 13px Rajdhani,sans-serif';
+    const tw=ctx.measureText(txt).width+12;
+    ctx.fillStyle='rgba(0,0,0,.75)';
+    ctx.beginPath();ctx.roundRect(x-tw/2,y-22,tw,20,4);ctx.fill();
+    ctx.fillStyle=col;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(txt,x,y-12);ctx.restore();
+  };
+  if(r.ea&&lm[14])drawLbl(`${Math.round(r.ea)}°`,lm[14],bok?'#00E676':'#FF1744');
+  if(r.kk&&lm[26])drawLbl(`${Math.round(r.kk)}°`,lm[26],kok?'#00E676':'#FF1744');
+}
+
+// ══════════ UPDATE HUD ══════════
+function setHUD(r){
+  const sn=document.getElementById('score-num');
+  sn.textContent=r.s.toFixed(0);
+  sn.style.color=r.s>=8?'#00E676':r.s>=5?'#FF8800':'#FF1744';
+  const st=document.getElementById('status-txt');
+  if(!r.i.length&&!r.w.length){st.textContent='🔥 FORMA PERFECTA';st.style.color='#00E676';}
+  else if(r.i.length){st.textContent=`⚠ ${r.i[0].toUpperCase()}`;st.style.color='#FF1744';}
+  else{st.textContent=`▲ ${r.w[0].toUpperCase()}`;st.style.color='#FF8800';}
+  document.getElementById('tags').innerHTML=[
+    ...r.i.map(t=>`<span class="tag er">✗ ${t}</span>`),
+    ...r.w.map(t=>`<span class="tag wn">▲ ${t}</span>`),
+    ...r.g.map(t=>`<span class="tag ok">✓ ${t}</span>`),
+  ].join('');
+}
+
+function setDrillHUD(r){
+  const st=document.getElementById('drill-cam-status');
+  if(!r.i.length&&!r.w.length){st.textContent='🔥 FORMA PERFECTA';st.style.color='#00E676';}
+  else if(r.i.length){st.textContent=`⚠ ${r.i[0].toUpperCase()}`;st.style.color='#FF1744';}
+  else{st.textContent=`▲ ${r.w[0].toUpperCase()}`;st.style.color='#FF8800';}
+  document.getElementById('drill-tags').innerHTML=[
+    ...r.i.map(t=>`<span class="tag er">✗ ${t}</span>`),
+    ...r.w.map(t=>`<span class="tag wn">▲ ${t}</span>`),
+    ...r.g.map(t=>`<span class="tag ok">✓ ${t}</span>`),
+  ].join('');
+}
+
+// ══════════ MAIN CAMERA ══════════
+async function startCam(){
+  const modeNames={shoot:'TIRO',dribble:'DRIBBLE',defense:'DEFENSA',followthrough:'FOLLOW-THROUGH'};
+  document.getElementById('a-idle').style.display='none';
+  const cw=document.getElementById('cam-wrap');
+  cw.style.display='block';
+  document.getElementById('cam-ctrls').style.display='flex';
+  document.getElementById('loading').style.display='flex';
+  document.getElementById('err').style.display='none';
+  document.getElementById('mode-badge').textContent=modeNames[mode];
+  document.getElementById('bpm-box').style.display=mode==='dribble'?'block':'none';
+  sessShots=0;sessScores=[];sessActive=true;
+  document.getElementById('shot-count').textContent='0';
+  wristHist=[];dribbleHist=[];
+
+  try{
+    mainPose=new Pose({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}`});
+    mainPose.setOptions({modelComplexity:1,smoothLandmarks:true,enableSegmentation:false,minDetectionConfidence:.5,minTrackingConfidence:.5});
+    mainPose.onResults(onMainResult);
+    const vid=document.getElementById('vid');
+    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}}});
+    vid.srcObject=stream;await vid.play();
+    mainCam=new Camera(vid,{onFrame:async()=>{await mainPose.send({image:vid});},width:640,height:480});
+    mainCam.start();
+  }catch(e){
+    document.getElementById('loading').style.display='none';
+    const eb=document.getElementById('err');eb.style.display='block';
+    eb.textContent='⚠️ No se pudo acceder a la cámara. Abre en Safari y da permiso.';
+    document.getElementById('a-idle').style.display='flex';
+    document.getElementById('cam-wrap').style.display='none';
+    document.getElementById('cam-ctrls').style.display='none';
+  }
+}
+
+function onMainResult(res){
+  const lo=document.getElementById('loading');
+  if(lo.style.display!=='none'){lo.style.display='none';speak('Análisis iniciado. ¡A entrenar!');}
+  const vid=document.getElementById('vid'),cvs=document.getElementById('cvs');
+  cvs.width=vid.videoWidth||640;cvs.height=vid.videoHeight||480;
+  const ctx=cvs.getContext('2d');ctx.clearRect(0,0,cvs.width,cvs.height);
+  if(!res.poseLandmarks||!res.poseLandmarks.length){
+    document.getElementById('status-txt').textContent='👀 MUÉVETE AL CENTRO';
+    document.getElementById('tags').innerHTML='';document.getElementById('score-num').textContent='--';return;
+  }
+  const r=runAnalysis(res.poseLandmarks,mode);
+  drawSkel(res.poseLandmarks,r,cvs);
+  setHUD(r);voiceFB(r);trackDribble(res.poseLandmarks);
+  sessScores.push(r.s);
+  if(detectShot(res.poseLandmarks)){
+    sessShots++;
+    document.getElementById('shot-count').textContent=sessShots;
+    const fl=document.getElementById('shot-flash');
+    document.getElementById('shot-txt').textContent=mode==='followthrough'?'🌊 FOLLOW!':'🏀 ¡TIRO!';
+    fl.classList.add('show');speak('¡Tiro detectado!');
+    setTimeout(()=>fl.classList.remove('show'),600);
+  }
+}
+
+function stopCam(){
+  if(mainCam){mainCam.stop();mainCam=null;}
+  if(mainPose){mainPose.close();mainPose=null;}
+  const vid=document.getElementById('vid');
+  if(vid.srcObject){vid.srcObject.getTracks().forEach(t=>t.stop());vid.srcObject=null;}
+  document.getElementById('a-idle').style.display='flex';
+  document.getElementById('cam-wrap').style.display='none';
+  document.getElementById('cam-ctrls').style.display='none';
+  sessActive=false;
+  window.speechSynthesis&&window.speechSynthesis.cancel();
+  document.getElementById('voice-badge').classList.remove('show');
+}
+
+function saveSession(){
+  if(!sessScores.length){stopCam();return;}
+  const avg=sessScores.reduce((a,b)=>a+b)/sessScores.length;
+  const modeNames={shoot:'Tiro',dribble:'Dribble',defense:'Defensa',followthrough:'Follow-through'};
+  sessions.unshift({id:Date.now(),mode,modeName:modeNames[mode],shots:sessShots,avgScore:+avg.toFixed(1),maxScore:+Math.max(...sessScores).toFixed(1),date:new Date().toLocaleDateString('es',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),reps:sessScores.length});
+  if(sessions.length>50)sessions.pop();
+  try{localStorage.setItem('hf_v2',JSON.stringify(sessions));}catch(e){}
+  speak(`Sesión guardada. Puntuación promedio ${avg.toFixed(1)}`);
+  stopCam();updateHomeStats();
+}
+
+// ══════════ DRILL CAMERA ══════════
+async function startDrillCam(drillMode){
+  const dw=document.getElementById('drill-cam-wrap');
+  dw.style.display='block';
+  try{
+    drillPose=new Pose({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/pose/${f}`});
+    drillPose.setOptions({modelComplexity:1,smoothLandmarks:true,enableSegmentation:false,minDetectionConfidence:.5,minTrackingConfidence:.5});
+    drillPose.onResults(res=>onDrillResult(res,drillMode));
+    const vid=document.getElementById('drill-vid');
+    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:480},height:{ideal:360}}});
+    vid.srcObject=stream;await vid.play();
+    drillCam=new Camera(vid,{onFrame:async()=>{await drillPose.send({image:vid});},width:480,height:360});
+    drillCam.start();
+  }catch(e){dw.style.display='none';}
+}
+
+function onDrillResult(res,drillMode){
+  const vid=document.getElementById('drill-vid'),cvs=document.getElementById('drill-cvs');
+  cvs.width=vid.videoWidth||480;cvs.height=vid.videoHeight||360;
+  const ctx=cvs.getContext('2d');ctx.clearRect(0,0,cvs.width,cvs.height);
+  if(!res.poseLandmarks||!res.poseLandmarks.length)return;
+  const r=runAnalysis(res.poseLandmarks,drillMode);
+  drawSkel(res.poseLandmarks,r,cvs);
+  setDrillHUD(r);voiceFB(r);
+}
+
+function stopDrillCam(){
+  if(drillCam){drillCam.stop();drillCam=null;}
+  if(drillPose){drillPose.close();drillPose=null;}
+  const vid=document.getElementById('drill-vid');
+  if(vid.srcObject){vid.srcObject.getTracks().forEach(t=>t.stop());vid.srcObject=null;}
+  document.getElementById('drill-cam-wrap').style.display='none';
+}
+
+// ══════════ DRILLS ══════════
+function startDrill(key){
+  const d=DRILLS[key];if(!d)return;
+  activeDrill={key,...d,current:0};drillReps=0;
+  document.getElementById('active-drill').style.display='block';
+  document.getElementById('drill-name-txt').textContent=`${d.icon} ${d.name}`;
+  document.getElementById('drill-prog').textContent=`0 / ${d.reps}`;
+  document.getElementById('rep-num').textContent='0';
+  document.getElementById('drill-instr').textContent=d.instr;
+  document.getElementById('drill-bar').style.width='0%';
+  document.getElementById('drill-done-btn').style.display=d.timer?'none':'block';
+
+  startDrillCam(d.mode);
+
+  if(d.timer){
+    let rem=d.reps;
+    document.getElementById('rep-num').textContent=rem;
+    document.getElementById('drill-prog').textContent=`${rem}s`;
+    speak(`${d.name} iniciado. ${d.instr}`);
+    drillTimer=setInterval(()=>{
+      rem--;
+      document.getElementById('rep-num').textContent=rem;
+      document.getElementById('drill-prog').textContent=`${rem}s`;
+      document.getElementById('drill-bar').style.width=`${((d.reps-rem)/d.reps)*100}%`;
+      if(rem<=0){clearInterval(drillTimer);speak('¡Ejercicio completado! ¡Excelente trabajo!');stopDrill();}
+      else if(rem===10)speak('Diez segundos restantes, sigue así');
+    },1000);
+  }else{
+    speak(`${d.name}. ${d.instr}`);
+  }
+  document.getElementById('active-drill').scrollIntoView({behavior:'smooth'});
+}
+
+function repDone(){
+  if(!activeDrill||activeDrill.timer)return;
+  drillReps++;
+  const t=activeDrill.reps;
+  document.getElementById('rep-num').textContent=drillReps;
+  document.getElementById('drill-prog').textContent=`${drillReps} / ${t}`;
+  document.getElementById('drill-bar').style.width=`${(drillReps/t)*100}%`;
+  if(drillReps>=t){speak('¡Serie completada! ¡Excelente trabajo!');setTimeout(stopDrill,1500);}
+  else if(drillReps%5===0)speak(`${drillReps} de ${t}. ¡Sigue así!`);
+}
+
+function stopDrill(){
+  if(drillTimer){clearInterval(drillTimer);drillTimer=null;}
+  stopDrillCam();
+  activeDrill=null;drillReps=0;
+  document.getElementById('active-drill').style.display='none';
+}
+
+// ══════════ NAV & UI ══════════
+function nav(screen){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById(screen+'-screen').classList.add('active');
+  document.getElementById('nb-'+screen).classList.add('active');
+  if(screen==='stats')renderStats();
+  if(screen==='home')updateHomeStats();
+}
+
+function pickMode(m,el){
+  mode=m;
+  document.querySelectorAll('.mc').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function pillMode(el,m){
+  mode=m;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  const n={shoot:'TIRO',dribble:'DRIBBLE',defense:'DEFENSA',followthrough:'FOLLOW-THROUGH'};
+  document.getElementById('idle-mode').textContent=n[m];
+}
+
+// ══════════ STATS ══════════
+function updateHomeStats(){
+  document.getElementById('h-sess').textContent=sessions.length;
+  document.getElementById('h-shots').textContent=sessions.reduce((a,s)=>a+(s.shots||0),0);
+  if(sessions.length){const avg=sessions.reduce((a,s)=>a+s.avgScore,0)/sessions.length;document.getElementById('h-avg').textContent=avg.toFixed(1);}
+}
+
+function renderStats(){
+  document.getElementById('st-sess').textContent=sessions.length;
+  document.getElementById('st-shots').textContent=sessions.reduce((a,s)=>a+(s.shots||0),0);
+  if(sessions.length){
+    const avg=sessions.reduce((a,s)=>a+s.avgScore,0)/sessions.length;
+    const best=Math.max(...sessions.map(s=>s.avgScore));
+    document.getElementById('st-avg').textContent=avg.toFixed(1);
+    document.getElementById('st-best').textContent=best.toFixed(1);
+  }
+  const last7=sessions.slice(0,7).reverse();
+  const chart=document.getElementById('bar-chart');
+  if(last7.length){
+    chart.innerHTML=last7.map(s=>{
+      const h=(s.avgScore/10)*80,col=s.avgScore>=8?'#00E676':s.avgScore>=6?'#FF8800':'#FF1744';
+      return`<div class="bc"><div class="bar" style="height:${h}px;background:${col};box-shadow:0 0 10px ${col}60"></div><div class="blbl">${s.avgScore}</div></div>`;
+    }).join('');
+  }
+  const list=document.getElementById('sess-list');
+  const icons={shoot:'🎯',dribble:'⚡',defense:'🛡️',followthrough:'🌊'};
+  if(sessions.length){
+    list.innerHTML=sessions.slice(0,10).map(s=>`
+      <div class="sess-item">
+        <span class="si-icon">${icons[s.mode]||'🏀'}</span>
+        <div class="si-info"><div class="si-title">${s.modeName} · ${s.shots} tiros</div><div class="si-meta">${s.date} · ${s.reps} análisis</div></div>
+        <div class="si-score">${s.avgScore}</div>
+      </div>`).join('');
+  }
+}
+
+// init
+updateHomeStats();
+</script>
+</body>
+</html>
